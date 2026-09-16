@@ -94,6 +94,20 @@ body {
 .hero h2 { font-size: 26px; margin: 0 0 4px; letter-spacing: -.4px; }
 .hero p { margin: 0; color: var(--muted); font-size: 14px; }
 
+/* ============ 板块切换（简答题 / 课后题） ============ */
+.modesw {
+  display: flex; gap: 5px; margin: 16px 4px 0; padding: 5px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; box-shadow: var(--shadow);
+}
+.modesw a {
+  flex: 1; padding: 10px 0; border-radius: 10px; text-align: center;
+  text-decoration: none; color: var(--muted);
+  font-size: 14px; font-weight: 600; letter-spacing: .3px;
+}
+.modesw a:active { background: var(--card-2); }
+.modesw a.on { background: var(--accent); color: #fff; }
+
 .section-title {
   display: flex; align-items: baseline; gap: 8px;
   margin: 22px 4px 10px; font-size: 13px; font-weight: 600;
@@ -260,6 +274,19 @@ body {
 .fav-answer figure.svgfig svg { width: 100%; height: auto; }
 .fav-answer figcaption { font-size: 12px; color: var(--faint); text-align: center; margin-top: 6px; }
 
+/* ============ 课后题切图 ============ */
+/* 题面和答案都是按题从原稿裁下来的图，公式是 OLE 对象、文字层是乱码，
+   所以这里只放图不排版。白底是硬性的：暗色模式下必须保持可读。 */
+.qimgs { display: block; }
+.qimgs img, .answer .hwimg, .fav-answer .hwimg {
+  width: 100%; height: auto; display: block;
+  background: #fff; border: 1px solid var(--border); border-radius: 10px;
+}
+/* 跨页的题/答案会切成多张，挨着排，中间留条缝 */
+.qimgs img + img, .answer .hwimg + .hwimg, .fav-answer .hwimg + .hwimg {
+  margin-top: 10px;
+}
+
 /* ============ 笔记 ============ */
 .note-page { margin-bottom: 16px; }
 .note-page img { width: 100%; display: block; border-radius: 12px;
@@ -301,7 +328,20 @@ body {
 .lightbox img.wide {
   width: auto; max-width: none; height: 62vh; margin: 0 12px;
 }
+/* 点图循环放大：课后题的切图信息密度高，1x 往往看不清 */
+.lightbox img.z2 { width: 200%; max-width: none; }
+.lightbox img.z3 { width: 300%; max-width: none; }
+.lightbox img.wide.z2 { width: auto; height: 124vh; }
+.lightbox img.wide.z3 { width: auto; height: 186vh; }
 .lightbox[hidden] { display: none; }
+
+/* 首次打开时提示一下能放大，否则这个交互没人会发现 */
+.lightbox::after {
+  content: "点按图片放大 · 点按空白处关闭";
+  position: fixed; left: 0; right: 0; bottom: calc(12px + var(--safe-b));
+  text-align: center; font-size: 11.5px; pointer-events: none;
+  color: rgba(255, 255, 255, .45);
+}
 .lightbox-close {
   position: fixed; top: calc(10px + var(--safe-t)); right: 12px; z-index: 101;
   width: 40px; height: 40px; border-radius: 50%; border: none;

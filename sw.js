@@ -1,13 +1,16 @@
 /* 物理光学刷题 · 离线缓存
  * 策略：页面/脚本/样式走「网络优先」保证更新；图片走「缓存优先」保证离线可看。
  */
-const CACHE = "po-quiz-v1";
+const CACHE = "po-quiz-v3";
+/* 课后题的 288 张切图不预缓存 —— 图片走下面的「缓存优先 + 按需写入」，
+   一次性 addAll 会把首次安装拖成几十秒，还容易整批失败。 */
 const SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./data.js",
+  "./hw-data.js",
   "./manifest.webmanifest",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
