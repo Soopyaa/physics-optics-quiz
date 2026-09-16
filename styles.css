@@ -1,0 +1,313 @@
+/* ============ 基础变量 ============ */
+:root {
+  --bg: #f2f3f7;
+  --card: #ffffff;
+  --card-2: #f7f8fb;
+  --text: #14171f;
+  --muted: #6b7280;
+  --faint: #9aa1ad;
+  --border: #e3e5ec;
+  --accent: #4f46e5;
+  --accent-soft: #eef0ff;
+  --ok: #059669;
+  --ok-soft: #e7f6f1;
+  --no: #d97706;
+  --no-soft: #fdf3e5;
+  --shadow: 0 1px 2px rgba(20, 23, 31, .06), 0 6px 20px rgba(20, 23, 31, .05);
+  --radius: 16px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0f14;
+    --card: #171a21;
+    --card-2: #1e222b;
+    --text: #e9ebef;
+    --muted: #99a0ac;
+    --faint: #737b88;
+    --border: #272c36;
+    --accent: #8b87ff;
+    --accent-soft: #23233c;
+    --ok: #34d399;
+    --ok-soft: #172c26;
+    --no: #fbbf24;
+    --no-soft: #2c2417;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 6px 20px rgba(0, 0, 0, .3);
+  }
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+/* hidden 属性必须能压过 display:flex/grid 等 */
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+        "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  overscroll-behavior-y: none;
+}
+
+#app {
+  max-width: 640px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  overflow-x: clip;              /* 兜底：防止长公式/长文本撑破布局 */
+  padding-bottom: calc(74px + var(--safe-b));
+}
+
+#app.no-tabs { padding-bottom: var(--safe-b); }
+
+/* ============ 通用 ============ */
+.page { padding: 0 16px; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 10px;
+  padding: calc(10px + var(--safe-t)) 12px 10px;
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(1.6) blur(12px);
+  -webkit-backdrop-filter: saturate(1.6) blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.topbar h1 { font-size: 17px; margin: 0; flex: 1; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.iconbtn {
+  flex: none; width: 40px; height: 40px; border-radius: 12px;
+  display: grid; place-items: center; border: none; cursor: pointer;
+  background: transparent; color: var(--text); font-size: 17px;
+}
+.iconbtn:active { background: var(--card-2); }
+.iconbtn svg { width: 22px; height: 22px; fill: currentColor; }
+.iconbtn.star { color: var(--faint); }
+.iconbtn.star.on { color: #f5a524; }
+
+.hero { padding: 22px 4px 6px; }
+.hero h2 { font-size: 26px; margin: 0 0 4px; letter-spacing: -.4px; }
+.hero p { margin: 0; color: var(--muted); font-size: 14px; }
+
+.section-title {
+  display: flex; align-items: baseline; gap: 8px;
+  margin: 22px 4px 10px; font-size: 13px; font-weight: 600;
+  color: var(--muted); letter-spacing: .3px;
+}
+
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+
+/* ============ 统计条 ============ */
+.stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); box-shadow: var(--shadow);
+  margin-top: 16px;
+}
+.stats div { background: var(--card); padding: 14px 8px; text-align: center; }
+.stats b { display: block; font-size: 21px; font-variant-numeric: tabular-nums; }
+.stats span { font-size: 12px; color: var(--muted); }
+
+/* ============ 章节卡片 ============ */
+.chapter {
+  display: block; margin-bottom: 10px; overflow: hidden;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  color: inherit;
+}
+.chapter-main {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  padding: 15px 16px 13px; text-align: left;
+  color: inherit; font-family: inherit; font-size: inherit;
+  cursor: pointer; text-decoration: none;
+}
+.chapter-main:active { background: var(--card-2); }
+.chapter .badge {
+  flex: none; width: 46px; height: 46px; border-radius: 13px;
+  display: grid; place-items: center; font-weight: 700; font-size: 17px;
+  background: var(--accent-soft); color: var(--accent);
+}
+.chapter .meta { flex: 1; min-width: 0; }
+.chapter .meta .t { display: block; font-weight: 600; font-size: 16px; }
+.chapter .meta .s { display: block; font-size: 12.5px; color: var(--muted);
+  margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chapter .go { flex: none; color: var(--faint); font-size: 15px;
+  font-variant-numeric: tabular-nums; text-align: right; }
+.chapter .go .bar { display: block; width: 54px; height: 4px; border-radius: 2px;
+  background: var(--border); margin-top: 6px; overflow: hidden; }
+.chapter .go .bar i { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+
+.chapter.all { background: linear-gradient(135deg, var(--accent-soft), var(--card)); }
+.chapter.all .badge { background: var(--accent); color: #fff; font-size: 13px; }
+
+.notesbtn {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin: 0 16px 14px; padding: 5px 11px; border-radius: 9px;
+  font-size: 12.5px; background: var(--card-2); color: var(--muted);
+  border: 1px solid var(--border); text-decoration: none;
+}
+.notesbtn:active { background: var(--accent-soft); color: var(--accent); }
+
+/* ============ 刷题页 ============ */
+.quiz-wrap { padding: 0 16px 20px; }
+
+.progress-line { display: flex; align-items: center; gap: 10px;
+  margin: 14px 2px 12px; font-size: 12.5px; color: var(--muted); }
+.progress-line .track { flex: 1; height: 5px; border-radius: 3px;
+  background: var(--border); overflow: hidden; }
+.progress-line .track i { display: block; height: 100%; background: var(--accent);
+  transition: width .3s ease; }
+
+.qcard {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 18px 18px 20px;
+}
+.qcard .qno { font-size: 12px; color: var(--accent); font-weight: 600;
+  letter-spacing: .5px; margin-bottom: 8px; }
+.qcard .qtext { font-size: 19px; line-height: 1.62; font-weight: 600;
+  overflow-wrap: anywhere; }
+
+.answer { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);
+  font-size: 16.5px; line-height: 1.85; overflow-wrap: break-word; }
+.answer .lead { font-size: 12px; color: var(--accent); font-weight: 600;
+  letter-spacing: .5px; margin-bottom: 10px; }
+.answer p { margin: 0 0 12px; }
+.answer p:last-child { margin-bottom: 0; }
+.answer ul { margin: 0 0 12px; padding-left: 22px; }
+.answer li { margin-bottom: 6px; }
+.answer .note { font-size: 13.5px; color: var(--muted); background: var(--card-2);
+  border-left: 3px solid var(--border); padding: 8px 12px; border-radius: 0 8px 8px 0; }
+.answer figure { margin: 14px 0; }
+.answer figure img {
+  width: 100%; border-radius: 10px; background: #fff;
+  border: 1px solid var(--border); display: block;
+}
+.answer figure.svgfig {
+  background: var(--card-2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 10px; color: var(--text);
+}
+.answer figure.svgfig svg { width: 100%; height: auto; display: block; }
+.answer figcaption { font-size: 12px; color: var(--faint);
+  text-align: center; margin-top: 8px; }
+
+/* 公式排版 */
+.m { font-family: "Times New Roman", "Songti SC", serif; font-style: italic; }
+.frac { display: inline-flex; flex-direction: column; vertical-align: middle;
+  text-align: center; margin: 0 .18em; font-size: .94em; line-height: 1.25; }
+.frac > .n { border-bottom: 1.2px solid currentColor; padding: 0 .28em .5px; }
+.frac > .d { padding: .5px .28em 0; }
+.rad { border-top: 1.2px solid currentColor; padding: 0 .18em; }
+
+.btnrow { display: flex; gap: 10px; margin-top: 18px; }
+.btn {
+  flex: 1; min-height: 54px; border-radius: 14px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text); font: inherit; font-size: 16px;
+  font-weight: 600; cursor: pointer; display: grid; place-items: center;
+  text-decoration: none; box-shadow: var(--shadow);
+}
+.btn:active { transform: scale(.98); }
+.btn.primary { background: var(--accent); color: #fff; border-color: transparent; }
+.btn:disabled { opacity: .45; }
+
+.markrow { display: flex; gap: 10px; margin-top: 14px; }
+.mark {
+  flex: 1; min-height: 46px; border-radius: 13px; font: inherit; font-size: 14.5px;
+  font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+  background: var(--card-2); color: var(--muted);
+}
+.mark:active { transform: scale(.98); }
+.mark.on-ok { background: var(--ok-soft); color: var(--ok); border-color: var(--ok); }
+.mark.on-no { background: var(--no-soft); color: var(--no); border-color: var(--no); }
+
+.hint { text-align: center; color: var(--faint); font-size: 12.5px; margin-top: 14px; }
+
+/* ============ 收藏 / 列表 ============ */
+.item {
+  display: block; width: 100%; text-align: left; text-decoration: none;
+  color: inherit; font-family: inherit; font-size: inherit; cursor: pointer;
+  padding: 14px 16px; margin-bottom: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.item:active { transform: scale(.99); }
+.item .tag { font-size: 11.5px; color: var(--accent); font-weight: 600;
+  letter-spacing: .4px; margin-bottom: 5px; }
+.item .txt { font-size: 15.5px; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+.empty { text-align: center; color: var(--muted); padding: 56px 24px; font-size: 14.5px; }
+.empty .big { font-size: 40px; display: block; margin-bottom: 12px; opacity: .5; }
+
+.fav-answer { margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--border);
+  font-size: 15.5px; line-height: 1.8; }
+.fav-answer p { margin: 0 0 10px; }
+.fav-answer ul { margin: 0 0 10px; padding-left: 22px; }
+.fav-answer figure { margin: 12px 0; }
+.fav-answer figure img { width: 100%; border-radius: 10px; background: #fff;
+  border: 1px solid var(--border); }
+.fav-answer figure.svgfig { background: var(--card-2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 10px; }
+.fav-answer figure.svgfig svg { width: 100%; height: auto; }
+.fav-answer figcaption { font-size: 12px; color: var(--faint); text-align: center; margin-top: 6px; }
+
+/* ============ 笔记 ============ */
+.note-page { margin-bottom: 16px; }
+.note-page img { width: 100%; display: block; border-radius: 12px;
+  border: 1px solid var(--border); background: #fff; }
+.note-page .cap { font-size: 12px; color: var(--faint);
+  text-align: center; margin-top: 6px; }
+
+/* ============ 底部导航 ============ */
+.tabbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  display: flex; justify-content: center; gap: 4px;
+  padding: 6px 8px calc(6px + var(--safe-b));
+  background: var(--card);
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  backdrop-filter: saturate(1.6) blur(14px);
+  -webkit-backdrop-filter: saturate(1.6) blur(14px);
+  border-top: 1px solid var(--border);
+}
+.tabbar a {
+  flex: 1; max-width: 150px; display: grid; place-items: center; gap: 3px;
+  padding: 7px 0; border-radius: 12px; text-decoration: none;
+  color: var(--faint); font-size: 11px; font-weight: 500;
+}
+.tabbar a svg { width: 23px; height: 23px; fill: currentColor; }
+.tabbar a.active { color: var(--accent); background: var(--accent-soft); }
+.tabbar[hidden] { display: none; }
+
+/* ============ 图片查看 ============ */
+.lightbox {
+  position: fixed; inset: 0; z-index: 100; background: rgba(8, 10, 14, .97);
+  overflow: auto; -webkit-overflow-scrolling: touch;
+  padding: calc(58px + var(--safe-t)) 0 calc(40px + var(--safe-b));
+}
+.lightbox img {
+  width: 100%; max-width: 900px; height: auto; display: block;
+  margin: 0 auto; background: #fff;
+}
+/* 又扁又宽的公式长条：按高度放大，横向可拖动，保证字号可读 */
+.lightbox img.wide {
+  width: auto; max-width: none; height: 62vh; margin: 0 12px;
+}
+.lightbox[hidden] { display: none; }
+.lightbox-close {
+  position: fixed; top: calc(10px + var(--safe-t)); right: 12px; z-index: 101;
+  width: 40px; height: 40px; border-radius: 50%; border: none;
+  background: rgba(255, 255, 255, .16); color: #fff; font-size: 17px; cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
