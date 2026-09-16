@@ -1,7 +1,7 @@
 {
-  "name": "物理光学 · 简答题",
-  "short_name": "物理光学",
-  "description": "物理光学第 4~8 章简答题随机抽题练习",
+  "name": "李承霖大王的光学复习",
+  "short_name": "李承霖大王的光学复习",
+  "description": "《物理光学》第 4~8 章简答题与课后计算题，随机抽题练习",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

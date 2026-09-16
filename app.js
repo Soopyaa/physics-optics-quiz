@@ -1,4 +1,4 @@
-/* 物理光学 · 简答题 —— 单页应用 */
+/* 李承霖大王的光学复习 —— 单页应用 */
 (function () {
   "use strict";
 
@@ -155,7 +155,7 @@
 
     view.innerHTML =
       /* 主页是两个板块共用的入口，标题就不再跟着板块变 */
-      '<div class="topbar"><h1>物理光学 · 刷题</h1></div>' +
+      '<div class="topbar"><h1>李承霖大王的光学复习</h1></div>' +
       '<div class="page">' +
         modeSwitch(mode) +
         '<div class="hero"><h2>' + (hw ? "课后计算题" : "今天刷几道？") + "</h2>" +
