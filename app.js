@@ -57,13 +57,43 @@
   function hwPoolOf(chId) {
     return chId === "all" ? HW.slice() : HW.filter(function (q) { return q.ch === chId; });
   }
-  /* 课后题的 q 是图片文件名数组，简答题的 q 是 HTML 字符串 */
+  /* ---------------- 选择题真题 ---------------- */
+  function mcYearOf(id) {
+    for (var i = 0; i < MC_YEARS.length; i++) if (MC_YEARS[i].id === id) return MC_YEARS[i];
+    return null;
+  }
+  function mcById(id) {
+    for (var i = 0; i < MC.length; i++) if (MC[i].id === id) return MC[i];
+    return null;
+  }
+  function mcPoolOf(y) {
+    return y === "all" ? MC.slice() : MC.filter(function (q) { return q.y === y; });
+  }
+
+  /* 课后题的 q 是图片文件名数组，简答题的 q 是 HTML 字符串，选择题多一个 o 选项数组 */
   function isHW(item) { return !!(item && item.q && typeof item.q !== "string"); }
-  function anyById(id) { return qById(id) || hwById(id); }
-  function poolFor(mode, chId) { return mode === "hw" ? hwPoolOf(chId) : poolOf(chId); }
-  function chapterFor(mode, chId) { return mode === "hw" ? hwChapterOf(chId) : chapterOf(chId); }
-  function poolLabel(mode, chId) { return chLabel(chId) + (mode === "hw" ? " · 课后题" : ""); }
-  function byIdFor(mode, id) { return mode === "hw" ? hwById(id) : qById(id); }
+  function isMC(item) { return !!(item && item.o && item.o.length); }
+  function anyById(id) { return qById(id) || hwById(id) || mcById(id); }
+  function poolFor(mode, chId) {
+    return mode === "hw" ? hwPoolOf(chId) : mode === "mc" ? mcPoolOf(chId) : poolOf(chId);
+  }
+  function chapterFor(mode, chId) {
+    return mode === "hw" ? hwChapterOf(chId) : mode === "mc" ? mcYearOf(chId) : chapterOf(chId);
+  }
+  function byIdFor(mode, id) {
+    return mode === "hw" ? hwById(id) : mode === "mc" ? mcById(id) : qById(id);
+  }
+  /* 简答题按章、课后题按章、选择题按年份 —— 三者的「章节」标签不一样 */
+  function chLabelFor(mode, chId) {
+    if (mode !== "mc") return chLabel(chId);
+    return chId === "all" ? "全部年份" : chId + " 年";
+  }
+  function poolLabel(mode, chId) {
+    return chLabelFor(mode, chId) +
+      (mode === "hw" ? " · 课后题" : mode === "mc" ? " · 选择题" : "");
+  }
+  function routeBase(mode) { return mode === "hw" ? "hw/" : mode === "mc" ? "mc/" : "quiz/"; }
+  function modeHome(mode) { return mode === "hw" ? "#/hw" : mode === "mc" ? "#/mc" : "#/"; }
 
   /* ---------------- 工具 ---------------- */
   function esc(s) {
@@ -108,15 +138,47 @@
     }).join("");
   }
   function qBodyHTML(item) {
-    return isHW(item) ? hwImgs(item.q, "题目") : item.q;
+    if (isHW(item)) return hwImgs(item.q, "题目");
+    if (isMC(item)) {
+      var fig = (item.fig || []).map(function (f) {
+        return '<img class="mcfig" src="assets/mc/' + f + '" alt="题目插图" loading="lazy">';
+      }).join("");
+      return '<div class="qtext mc">' + item.q + "</div>" + fig + optsHTML(item);
+    }
+    return item.q;
   }
   function aBodyHTML(item) {
-    return isHW(item) ? hwImgs(item.a, "参考答案") : blocksHTML(item.a);
+    if (isHW(item)) return hwImgs(item.a, "参考答案");
+    if (isMC(item)) return optsHTML(item, null, true);   /* 收藏页/答案区：直接标出正确项 */
+    return blocksHTML(item.a);
   }
-  /* 简答题 / 课后题 切换 */
+
+  var KEYS = ["A", "B", "C", "D", "E", "F"];
+
+  /* 选择题选项。chosen 是用户已选下标（未选传 -1），showAns 为真时把正确项标绿。
+     选项内容里可能带公式 HTML（.m/.frac/.rad），所以用 innerHTML 塞进去。 */
+  function optsHTML(item, chosen, showAns) {
+    var chosenI = typeof chosen === "number" ? chosen : -1;
+    var ansI = typeof item.a === "number" ? item.a : -1;
+    return '<div class="opts">' + item.o.map(function (t, i) {
+      var cls = "opt";
+      if (showAns && i === ansI) cls += " ok";
+      if (chosenI === i) {
+        cls += " picked";
+        if (!showAns && ansI >= 0) cls += i === ansI ? " ok" : " no";
+        if (!showAns && ansI < 0) cls += " neutral";
+      }
+      return '<div class="' + cls + '" data-i="' + i + '">' +
+        '<span class="key">' + (KEYS[i] || i + 1) + "</span>" +
+        '<span class="val">' + t + "</span></div>";
+    }).join("") + "</div>";
+  }
+
+  /* 简答题 / 选择题 / 课后题 切换 */
   function modeSwitch(mode) {
     return '<div class="modesw">' +
       '<a href="#/" class="' + (mode === "quiz" ? "on" : "") + '">简答题</a>' +
+      '<a href="#/mc" class="' + (mode === "mc" ? "on" : "") + '">选择题</a>' +
       '<a href="#/hw" class="' + (mode === "hw" ? "on" : "") + '">课后题</a>' +
     "</div>";
   }
@@ -124,9 +186,9 @@
   /* ---------------- 主页 ---------------- */
   function renderHome(mode) {
     mode = mode || "quiz";
-    var hw = mode === "hw";
-    var all = hw ? HW : QUESTIONS;
-    var chs = hw ? HW_CHAPTERS : CHAPTERS;
+    var hw = mode === "hw", mc = mode === "mc";
+    var all = hw ? HW : mc ? MC : QUESTIONS;
+    var chs = hw ? HW_CHAPTERS : mc ? MC_YEARS : CHAPTERS;
     var total = all.length;
     var served = seenCount(all);
     var known = all.filter(function (q) {
@@ -137,49 +199,56 @@
     var cards = chs.map(function (c) {
       var pool = poolFor(mode, c.id);
       var s = seenCount(pool);
-      var pct = Math.round((s / pool.length) * 100);
+      var pct = pool.length ? Math.round((s / pool.length) * 100) : 0;
+      var head = mc ? c.id + " 年 · " + c.title : "第" + c.id + "章 · " + c.title;
       return '<div class="chapter">' +
-        '<a class="chapter-main" href="#/' + (hw ? "hw/" : "quiz/") + c.id + '">' +
-          '<span class="badge">' + c.id + "</span>" +
-          '<span class="meta"><span class="t">第' + c.id + "章 · " + c.title + "</span>" +
+        '<a class="chapter-main" href="#/' + routeBase(mode) + c.id + '">' +
+          '<span class="badge' + (mc ? " year" : "") + '">' + c.id + "</span>" +
+          '<span class="meta"><span class="t">' + head + "</span>" +
           '<span class="s">' + c.sub + " · 共 " + pool.length + " 题</span></span>" +
           '<span class="go">' + s + "/" + pool.length +
           '<span class="bar"><i style="width:' + pct + '%"></i></span></span>' +
         "</a>" +
-        (hw ? "" :
-          '<a class="notesbtn" href="#/notes/' + c.id + '">📄 手写笔记 ' + c.notes.length + " 页</a>") +
+        (mode === "quiz" ?
+          '<a class="notesbtn" href="#/notes/' + c.id + '">📄 手写笔记 ' + c.notes.length + " 页</a>" : "") +
+        /* 回忆版卷子有不少「卷面就这样」的怪处，摊在卡片下面说清楚，别让人以为是站点出错了 */
+        (mc && c.note ? '<p class="cnote">' + c.note + "</p>" : "") +
       "</div>";
     }).join("");
 
     var allPct = Math.round((served / total) * 100);
+    var hero = hw ? "课后计算题" : mc ? "真题选择题" : "今天刷几道？";
+    var heroSub = hw ? "第 4~8 章 · 共 " + total + " 道计算题（题目与答案分开）"
+                     : mc ? "2008~2024 · 共 " + total + " 道选择题"
+                          : "第 4~8 章 · 共 " + total + " 道简答题";
 
     view.innerHTML =
-      /* 主页是两个板块共用的入口，标题就不再跟着板块变 */
+      /* 主页是三个板块共用的入口，标题就不再跟着板块变 */
       '<div class="topbar"><h1>李承霖大王的光学复习</h1></div>' +
       '<div class="page">' +
         modeSwitch(mode) +
-        '<div class="hero"><h2>' + (hw ? "课后计算题" : "今天刷几道？") + "</h2>" +
-        "<p>第 4~8 章 · 共 " + total + " 道" + (hw ? "计算题（题目与答案分开）" : "简答题") + "</p></div>" +
+        '<div class="hero"><h2>' + hero + "</h2><p>" + heroSub + "</p></div>" +
         '<div class="stats">' +
           "<div><b>" + served + "/" + total + "</b><span>已刷</span></div>" +
           "<div><b>" + known + "</b><span>已掌握</span></div>" +
           "<div><b>" + state.fav.length + "</b><span>收藏</span></div>" +
         "</div>" +
-        '<div class="section-title">按章节刷</div>' + cards +
-        '<div class="chapter all"><a class="chapter-main" href="#/' + (hw ? "hw/all" : "quiz/all") + '">' +
+        '<div class="section-title">' + (mc ? "按年份刷" : "按章节刷") + "</div>" + cards +
+        '<div class="chapter all"><a class="chapter-main" href="#/' + routeBase(mode) + 'all">' +
           '<span class="badge">全部</span>' +
-          '<span class="meta"><span class="t">全部章节</span>' +
+          '<span class="meta"><span class="t">' + (mc ? "全部年份" : "全部章节") + "</span>" +
           '<span class="s">打乱所有 ' + total + " 道题" + (weak ? " · 其中 " + weak + " 道还不熟" : "") + "</span></span>" +
           '<span class="go">' + served + "/" + total +
           '<span class="bar"><i style="width:' + allPct + '%"></i></span></span></a></div>' +
         '<p class="hint">优先抽没刷过的题；全部刷完后优先复习「还不熟」的</p>' +
         (hw ? '<p class="hint">题目和答案都是原书切图，点图可放大细看</p>' : "") +
+        (mc ? '<p class="hint">选项点一下就算作答，答对自动记「已掌握」、答错记「还不熟」</p>' : "") +
       "</div>";
     setTab("home");
   }
 
   /* ---------------- 刷题页 ---------------- */
-  var cur = { ch: null, q: null, revealed: false, mode: "quiz" };
+  var cur = { ch: null, q: null, revealed: false, mode: "quiz", chosen: null };
 
   function pickNext(mode, chId, excludeId) {
     var pool = poolFor(mode, chId);
@@ -201,7 +270,7 @@
   function renderQuiz(chId, qid, mode) {
     mode = mode || "quiz";
     var pool = poolFor(mode, chId);
-    if (!pool.length) { location.hash = mode === "hw" ? "#/hw" : "#/"; return; }
+    if (!pool.length) { location.hash = modeHome(mode); return; }
 
     /* 给了题号就用那一题；否则重新抽（同一章内尽量避免和上一题重复） */
     var q = qid ? byIdFor(mode, qid) : null;
@@ -211,10 +280,11 @@
     cur.mode = mode;
     cur.q = q;
     cur.revealed = false;
+    cur.chosen = null;
     drawQuiz();
 
     /* 深链进入时把 hash 补成具体题号，刷新/回退不会换题 */
-    var want = "#/" + (mode === "hw" ? "hw/" : "quiz/") + chId + "/" + q.id;
+    var want = "#/" + routeBase(mode) + chId + "/" + q.id;
     if (location.hash !== want) history.replaceState(null, "", want);
   }
 
@@ -226,27 +296,17 @@
     var ch = chId === "all" ? null : chapterFor(mode, chId);
     var fav = isFav(q.id);
     var p = state.progress[q.id] || { seen: 0, known: null };
-    var hw = isHW(q);
+    var hw = isHW(q), mc = isMC(q);
+    var head = ch ? (mc ? chLabelFor(mode, chId) + " · " + ch.title : chLabel(chId) + " · " + ch.title)
+                  : chLabelFor(mode, chId);
 
-    view.innerHTML =
-      '<div class="topbar">' +
-        '<button class="iconbtn" id="back" aria-label="返回">' +
-          '<svg viewBox="0 0 24 24"><path d="M15.4 4.6 8 12l7.4 7.4 1.4-1.4L10.8 12l6-6z"/></svg></button>' +
-        "<h1>" + chLabel(chId) + (ch ? " · " + ch.title : "") + "</h1>" +
-        '<button class="iconbtn star' + (fav ? " on" : "") + '" id="fav" aria-label="收藏">' +
-          '<svg viewBox="0 0 24 24"><path d="m12 3.6 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.8l5.9-.9z"/></svg></button>' +
-      "</div>" +
-      '<div class="quiz-wrap">' +
-        '<div class="progress-line"><span>' + poolLabel(mode, chId) + " " + s + "/" + pool.length + "</span>" +
-          '<span class="track"><i style="width:' + pct + '%"></i></span></div>' +
-        '<div class="qcard">' +
-          '<div class="qno">' + chLabel(q.ch) + (hw ? " 课后题" : "") + " · 第 " + q.num + " 题" +
-            (p.known === true ? " · 已掌握" : p.known === false ? " · 还不熟" : "") + "</div>" +
-          (hw ? '<div class="qimgs">' + qBodyHTML(q) + "</div>"
-              : '<div class="qtext">' + q.q + "</div>") +
-          '<div class="answer" id="ans" hidden><div class="lead">参考答案</div>' + aBodyHTML(q) + "</div>" +
-        "</div>" +
-        '<div class="btnrow"><button class="btn primary" id="reveal">显示答案</button></div>' +
+    /* 选择题的题面里已经带了可点的选项，不再需要「显示答案」那一步 */
+    var body = hw ? '<div class="qimgs">' + qBodyHTML(q) + "</div>"
+                  : mc ? qBodyHTML(q)
+                       : '<div class="qtext">' + q.q + "</div>";
+
+    var action = mc
+      ? '<div class="verdict" id="res" hidden></div>' +
         '<div id="after" hidden>' +
           '<div class="markrow">' +
             '<button class="mark' + (p.known === false ? " on-no" : "") + '" id="mno">还不熟</button>' +
@@ -254,8 +314,42 @@
           "</div>" +
           '<div class="btnrow"><button class="btn primary" id="next">下一题 →</button></div>' +
         "</div>" +
+        '<p class="hint" id="prehint">点一下选项就是作答</p>'
+      : '<div class="btnrow"><button class="btn primary" id="reveal">显示答案</button></div>' +
+        '<div id="after" hidden>' +
+          '<div class="markrow">' +
+            '<button class="mark' + (p.known === false ? " on-no" : "") + '" id="mno">还不熟</button>' +
+            '<button class="mark' + (p.known === true ? " on-ok" : "") + '" id="mok">已掌握</button>' +
+          "</div>" +
+          '<div class="btnrow"><button class="btn primary" id="next">下一题 →</button></div>' +
+        "</div>";
+
+    view.innerHTML =
+      '<div class="topbar">' +
+        '<button class="iconbtn" id="back" aria-label="返回">' +
+          '<svg viewBox="0 0 24 24"><path d="M15.4 4.6 8 12l7.4 7.4 1.4-1.4L10.8 12l6-6z"/></svg></button>' +
+        "<h1>" + head + "</h1>" +
+        '<button class="iconbtn star' + (fav ? " on" : "") + '" id="fav" aria-label="收藏">' +
+          '<svg viewBox="0 0 24 24"><path d="m12 3.6 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8L3.5 9.8l5.9-.9z"/></svg></button>' +
+      "</div>" +
+      '<div class="quiz-wrap">' +
+        '<div class="progress-line"><span>' + poolLabel(mode, chId) + " " + s + "/" + pool.length + "</span>" +
+          '<span class="track"><i style="width:' + pct + '%"></i></span></div>' +
+        '<div class="qcard">' +
+          '<div class="qno">' +
+            '<span class="qno-line">' + (mc ? q.y + " 年真题" : chLabel(q.ch) + (hw ? " 课后题" : "")) +
+              " · 第 " + q.num + " 题" +
+              '<span id="know">' + (p.known === true ? " · 已掌握" : p.known === false ? " · 还不熟" : "") +
+              "</span></span>" +
+            (q.note ? '<span class="qnote">' + q.note + "</span>" : "") +
+          "</div>" +
+          body +
+          (mc ? "" : '<div class="answer" id="ans" hidden><div class="lead">参考答案</div>' +
+                     aBodyHTML(q) + "</div>") +
+        "</div>" +
+        action +
         '<p class="hint">' +
-          '<a href="#/' + (hw ? "hw" : "") + '" style="color:inherit">返回主页</a>' +
+          '<a href="' + modeHome(mode) + '" style="color:inherit">返回主页</a>' +
         "</p>" +
       "</div>";
 
@@ -268,12 +362,80 @@
       save();
       this.classList.toggle("on", i < 0);
     });
-    document.getElementById("reveal").addEventListener("click", reveal);
     document.getElementById("next").addEventListener("click", nextQ);
     document.getElementById("mno").addEventListener("click", function () { mark(false); });
     document.getElementById("mok").addEventListener("click", function () { mark(true); });
 
+    if (mc) {
+      view.querySelectorAll(".opts .opt").forEach(function (el) {
+        el.addEventListener("click", function () { chooseOpt(parseInt(el.getAttribute("data-i"), 10)); });
+      });
+    } else {
+      document.getElementById("reveal").addEventListener("click", reveal);
+    }
+
     bindZoom(view);   /* 课后题的题目图也要能点开放大 */
+  }
+
+  /* 选择题：点选项即作答，当场判对错，并把结果写进进度 */
+  function chooseOpt(i) {
+    if (cur.chosen !== null) return;
+    cur.chosen = i;
+    var q = cur.q;
+    var p = prog(q.id);
+    p.seen += 1;
+    p.ts = Date.now();
+    p.pick = i;                                  /* 记下选了什么，回看时能还原 */
+    var has = typeof q.a === "number";
+    var right = has && i === q.a;
+    if (has) p.known = right;                    /* 答对自动记「已掌握」，答错记「还不熟」 */
+    save();
+    restorePick(i);
+  }
+
+  /* 把选项涂成「已选 + 对错」的样子，并显示结论条 */
+  function restorePick(i) {
+    var q = cur.q;
+    var has = typeof q.a === "number";
+    var right = has && i === q.a;
+    var els = view.querySelectorAll(".opts .opt");
+    els.forEach(function (el) {
+      var k = parseInt(el.getAttribute("data-i"), 10);
+      el.classList.remove("picked", "ok", "no", "neutral");
+      el.classList.add("locked");
+      if (has && k === q.a) el.classList.add("ok");
+      if (k === i) {
+        el.classList.add("picked");
+        if (has && !right) el.classList.add("no");
+        if (!has) el.classList.add("neutral");
+      }
+    });
+
+    var res = document.getElementById("res");
+    if (res) {
+      res.hidden = false;
+      res.className = "verdict " + (!has ? "unknown" : right ? "ok" : "no");
+      res.innerHTML = !has
+        ? "已选 <b>" + KEYS[i] + "</b> —— 答案册未收录这道题的答案"
+        : right ? "✓ 答对了"
+                : "✗ 答错了，正确答案是 <b>" + KEYS[q.a] + "</b>";
+    }
+    var pre = document.getElementById("prehint");
+    if (pre) pre.hidden = true;
+
+    document.getElementById("after").hidden = false;
+    var p = state.progress[q.id] || { known: null };
+    document.getElementById("mno").classList.toggle("on-no", p.known === false);
+    document.getElementById("mok").classList.toggle("on-ok", p.known === true);
+
+    /* 进度条与题号跟着更新（首次作答会影响统计） */
+    var pool = poolFor(cur.mode, cur.ch);
+    var track = view.querySelector(".progress-line .track i");
+    var label = view.querySelector(".progress-line span");
+    if (track) track.style.width = Math.round((seenCount(pool) / pool.length) * 100) + "%";
+    if (label) label.textContent = poolLabel(cur.mode, cur.ch) + " " + seenCount(pool) + "/" + pool.length;
+    var know = document.getElementById("know");
+    if (know) know.textContent = p.known === true ? " · 已掌握" : p.known === false ? " · 还不熟" : "";
   }
 
   function reveal() {
@@ -315,7 +477,8 @@
     if (!q) return;
     cur.q = q;
     cur.revealed = false;
-    history.replaceState(null, "", "#/" + (cur.mode === "hw" ? "hw/" : "quiz/") + cur.ch + "/" + q.id);
+    cur.chosen = null;
+    history.replaceState(null, "", "#/" + routeBase(cur.mode) + cur.ch + "/" + q.id);
     drawQuiz();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -332,12 +495,22 @@
     var items = state.fav.map(function (id) {
       var q = anyById(id);
       if (!q) return "";
+      var mc = isMC(q), hw = isHW(q);
+      var tag = (mc ? q.y + " 年" : chLabel(q.ch)) +
+                (hw ? " 课后题" : mc ? " 选择题" : "") + " · 第 " + q.num + " 题";
+      /* 选择题的题干里有公式和填空下划线，不能像简答题那样剥成纯文本，
+         否则 <sub>、分数和「____」都会丢 */
+      var txt = hw ? esc(q.t) : mc ? q.q : esc(plain(q.q));
+      /* 收藏页里选择题直接把选项连同答案一起列出来（顺手标出上次选了哪个），剩下的题还是折叠的 */
+      var body = mc ? optsHTML(q, (state.progress[id] || {}).pick, true) : "";
       return '<div class="item" data-id="' + id + '">' +
-        '<div class="tag">' + chLabel(q.ch) + (isHW(q) ? " 课后题" : "") + " · 第 " + q.num + " 题</div>" +
-        '<div class="txt">' + (isHW(q) ? esc(q.t) : esc(plain(q.q))) + "</div>" +
-        '<div class="fav-answer" hidden>' + aBodyHTML(q) + "</div>" +
+        '<div class="tag">' + tag + "</div>" +
+        '<div class="txt">' + txt + "</div>" +
+        (mc ? body : '<div class="fav-answer" hidden>' + body + "</div>") +
+        (q.note ? '<div class="qnote">' + q.note + "</div>" : "") +
         '<div class="btnrow"><button class="btn" data-del="' + id + '">取消收藏</button>' +
-        '<button class="btn primary" data-toggle="' + id + '">显示答案</button></div>' +
+        (mc ? "" : '<button class="btn primary" data-toggle="' + id + '">显示答案</button>') +
+        "</div>" +
         "</div>";
     }).join("");
 
@@ -476,6 +649,14 @@
       if (cur.ch !== hwCh && !parts[2]) cur.q = null;
       if (parts[2]) cur.ch = hwCh;
       return renderQuiz(hwCh, parts[2] || null, "hw");
+    }
+    if (parts[0] === "mc") {
+      if (!parts[1]) return renderHome("mc");
+      var y = parts[1] === "all" ? "all" : parseInt(parts[1], 10);
+      if (y !== "all" && !mcYearOf(y)) return renderHome("mc");
+      if (cur.ch !== y && !parts[2]) cur.q = null;
+      if (parts[2]) cur.ch = y;
+      return renderQuiz(y, parts[2] || null, "mc");
     }
     if (parts[0] === "quiz") {
       var chId = parts[1] === "all" || parts[1] === undefined ? "all" : parseInt(parts[1], 10);
