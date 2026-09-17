@@ -422,3 +422,20 @@ body {
 .blank { display: inline-block; width: 3.4em; height: 1em; vertical-align: -.14em;
   border-bottom: 1.5px solid currentColor; opacity: .55; }
 .item .qnote { margin: -6px 0 10px; }
+
+/* 知识点自测 —— 题面只有标题，要点在「看要点」之后才出现。
+   文字在 kp-data.js，渲染见 app.js 的 qBodyHTML / kpAnsHTML */
+.kptitle { font-size: 20px; font-weight: 650; line-height: 1.55;
+  letter-spacing: .2px; overflow-wrap: break-word; }
+.kpa { font-size: 16px; line-height: 1.85; overflow-wrap: break-word; }
+/* 变量衬线斜体、结论用强调色，跟解析、题库正文保持同一套写法 */
+.kpa i { font-family: "Times New Roman", "Songti SC", serif; font-style: italic; }
+.kpa b { color: var(--accent); font-weight: 600; }
+/* 「考过它的题」—— 直接跳到真题/简答题 */
+.kpref { margin: 14px 0 0; padding-top: 12px; border-top: 1px dashed var(--border);
+  font-size: 13px; line-height: 1.9; color: var(--muted); }
+.kpref a { color: var(--accent); text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  padding-bottom: 1px; }
+.kpref a:active { opacity: .6; }
+.item .kpa { font-size: 14.5px; }

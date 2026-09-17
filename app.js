@@ -69,31 +69,60 @@
   function mcPoolOf(y) {
     return y === "all" ? MC.slice() : MC.filter(function (q) { return q.y === y; });
   }
+  /* ---------------- 知识点（叶玉堂教材整理） ---------------- */
+  function kpById(id) {
+    for (var i = 0; i < KP.length; i++) if (KP[i].id === id) return KP[i];
+    return null;
+  }
+  function kpPoolOf(chId) {
+    return chId === "all" ? KP.slice() : KP.filter(function (k) { return k.ch === chId; });
+  }
+  /* 知识点挂在简答题那套章节上，所以直接借用 CHAPTERS 的标题和小标题 */
+  var KP_CHAPTERS = CHAPTERS.filter(function (c) {
+    return KP.some(function (k) { return k.ch === c.id; });
+  });
 
-  /* 课后题的 q 是图片文件名数组，简答题的 q 是 HTML 字符串，选择题多一个 o 选项数组 */
+  /* 课后题的 q 是图片文件名数组，简答题的 q 是 HTML 字符串，选择题多一个 o 选项数组，
+     知识点则是 t 标题 + a 字符串要点（没有 q、也没有 o） */
   function isHW(item) { return !!(item && item.q && typeof item.q !== "string"); }
   function isMC(item) { return !!(item && item.o && item.o.length); }
-  function anyById(id) { return qById(id) || hwById(id) || mcById(id); }
+  function isKP(item) {
+    return !!(item && item.t && typeof item.a === "string" && !item.q && !item.o);
+  }
+  function anyById(id) { return qById(id) || hwById(id) || mcById(id) || kpById(id); }
   function poolFor(mode, chId) {
-    return mode === "hw" ? hwPoolOf(chId) : mode === "mc" ? mcPoolOf(chId) : poolOf(chId);
+    return mode === "hw" ? hwPoolOf(chId)
+         : mode === "mc" ? mcPoolOf(chId)
+         : mode === "kp" ? kpPoolOf(chId) : poolOf(chId);
   }
   function chapterFor(mode, chId) {
-    return mode === "hw" ? hwChapterOf(chId) : mode === "mc" ? mcYearOf(chId) : chapterOf(chId);
+    return mode === "hw" ? hwChapterOf(chId)
+         : mode === "mc" ? mcYearOf(chId)
+         : mode === "kp" ? chapterOf(chId) : chapterOf(chId);
   }
   function byIdFor(mode, id) {
-    return mode === "hw" ? hwById(id) : mode === "mc" ? mcById(id) : qById(id);
+    return mode === "hw" ? hwById(id)
+         : mode === "mc" ? mcById(id)
+         : mode === "kp" ? kpById(id) : qById(id);
   }
-  /* 简答题按章、课后题按章、选择题按年份 —— 三者的「章节」标签不一样 */
+  /* 简答题按章、课后题按章、选择题按年份、知识点按章 —— 四者的「章节」标签不一样 */
   function chLabelFor(mode, chId) {
     if (mode !== "mc") return chLabel(chId);
     return chId === "all" ? "全部年份" : chId + " 年";
   }
   function poolLabel(mode, chId) {
     return chLabelFor(mode, chId) +
-      (mode === "hw" ? " · 课后题" : mode === "mc" ? " · 选择题" : "");
+      (mode === "hw" ? " · 课后题" : mode === "mc" ? " · 选择题"
+       : mode === "kp" ? " · 知识点" : "");
   }
-  function routeBase(mode) { return mode === "hw" ? "hw/" : mode === "mc" ? "mc/" : "quiz/"; }
-  function modeHome(mode) { return mode === "hw" ? "#/hw" : mode === "mc" ? "#/mc" : "#/"; }
+  /* 知识点是「条」不是「题」，量词单独给一个口子 */
+  function unitOf(mode) { return mode === "kp" ? "条" : "题"; }
+  function routeBase(mode) {
+    return mode === "hw" ? "hw/" : mode === "mc" ? "mc/" : mode === "kp" ? "kp/" : "quiz/";
+  }
+  function modeHome(mode) {
+    return mode === "hw" ? "#/hw" : mode === "mc" ? "#/mc" : mode === "kp" ? "#/kp" : "#/";
+  }
 
   /* ---------------- 工具 ---------------- */
   function esc(s) {
@@ -145,12 +174,35 @@
       }).join("");
       return '<div class="qtext mc">' + item.q + "</div>" + fig + optsHTML(item);
     }
+    /* 知识点自测：题面只有标题，要点藏在「看要点」后面 */
+    if (isKP(item)) return '<div class="kptitle">' + item.t + "</div>";
     return item.q;
   }
   function aBodyHTML(item) {
     if (isHW(item)) return hwImgs(item.a, "参考答案");
     if (isMC(item)) return optsHTML(item, null, true);   /* 收藏页/答案区：直接标出正确项 */
+    if (isKP(item)) return kpAnsHTML(item);
     return blocksHTML(item.a);
+  }
+
+  /* ---------------- 知识点：要点 + 易错注 + 考过它的真题 ---------------- */
+  function kpAnsHTML(item) {
+    return '<div class="kpa">' + item.a + "</div>" +
+      (item.tip ? '<p class="note">' + item.tip + "</p>" : "") +
+      refHTML(item);
+  }
+
+  /* ref 里的 id 指向别的板块 —— 选择题跳 #/mc/年份/题号，简答题跳 #/quiz/章/题号。
+     链接目标不在题库里就默默丢掉，不让一条错 id 把整段渲染搞坏。 */
+  function refHTML(item) {
+    var links = (item.ref || []).map(function (id) {
+      var q = anyById(id);
+      if (!q || isKP(q)) return "";
+      if (isMC(q)) return '<a href="#/mc/' + q.y + "/" + q.id + '">' + q.y + " 年第 " + q.num + " 题</a>";
+      return '<a href="#/quiz/' + q.ch + "/" + q.id + '">第 ' + q.ch + " 章第 " + q.num + " 题</a>";
+    }).filter(Boolean);
+    if (!links.length) return "";
+    return '<p class="kpref">考过的题：' + links.join("、") + "</p>";
   }
 
   var KEYS = ["A", "B", "C", "D", "E", "F"];
@@ -185,10 +237,11 @@
     return '<div class="exp"><div class="lead">解析</div>' + t + "</div>";
   }
 
-  /* 简答题 / 选择题 / 课后题 切换 */
+  /* 简答题 / 知识点 / 选择题 / 课后题 切换 */
   function modeSwitch(mode) {
     return '<div class="modesw">' +
       '<a href="#/" class="' + (mode === "quiz" ? "on" : "") + '">简答题</a>' +
+      '<a href="#/kp" class="' + (mode === "kp" ? "on" : "") + '">知识点</a>' +
       '<a href="#/mc" class="' + (mode === "mc" ? "on" : "") + '">选择题</a>' +
       '<a href="#/hw" class="' + (mode === "hw" ? "on" : "") + '">课后题</a>' +
     "</div>";
@@ -197,9 +250,10 @@
   /* ---------------- 主页 ---------------- */
   function renderHome(mode) {
     mode = mode || "quiz";
-    var hw = mode === "hw", mc = mode === "mc";
-    var all = hw ? HW : mc ? MC : QUESTIONS;
-    var chs = hw ? HW_CHAPTERS : mc ? MC_YEARS : CHAPTERS;
+    var hw = mode === "hw", mc = mode === "mc", kp = mode === "kp";
+    var unit = unitOf(mode);
+    var all = hw ? HW : mc ? MC : kp ? KP : QUESTIONS;
+    var chs = hw ? HW_CHAPTERS : mc ? MC_YEARS : kp ? KP_CHAPTERS : CHAPTERS;
     var total = all.length;
     var served = seenCount(all);
     var known = all.filter(function (q) {
@@ -211,12 +265,13 @@
       var pool = poolFor(mode, c.id);
       var s = seenCount(pool);
       var pct = pool.length ? Math.round((s / pool.length) * 100) : 0;
-      var head = mc ? c.id + " 年 · " + c.title : "第" + c.id + "章 · " + c.title;
+      var head = mc ? c.id + " 年 · " + c.title
+                    : "第" + c.id + "章 · " + c.title;
       return '<div class="chapter">' +
         '<a class="chapter-main" href="#/' + routeBase(mode) + c.id + '">' +
           '<span class="badge' + (mc ? " year" : "") + '">' + c.id + "</span>" +
           '<span class="meta"><span class="t">' + head + "</span>" +
-          '<span class="s">' + c.sub + " · 共 " + pool.length + " 题</span></span>" +
+          '<span class="s">' + c.sub + " · 共 " + pool.length + " " + unit + "</span></span>" +
           '<span class="go">' + s + "/" + pool.length +
           '<span class="bar"><i style="width:' + pct + '%"></i></span></span>' +
         "</a>" +
@@ -228,9 +283,11 @@
     }).join("");
 
     var allPct = Math.round((served / total) * 100);
-    var hero = hw ? "课后计算题" : mc ? "真题选择题" : "今天刷几道？";
+    var hero = hw ? "课后计算题" : mc ? "真题选择题" : kp ? "知识点自测" : "今天刷几道？";
     var heroSub = hw ? "第 4~8 章 · 共 " + total + " 道计算题（题目与答案分开）"
                      : mc ? "2008~2024 · 共 " + total + " 道选择题"
+                     : kp ? "第 " + chs[0].id + "~" + chs[chs.length - 1].id +
+                            " 章 · 共 " + total + " 条知识点（按叶玉堂《光学教程》整理）"
                           : "第 4~8 章 · 共 " + total + " 道简答题";
 
     view.innerHTML =
@@ -240,21 +297,24 @@
         modeSwitch(mode) +
         '<div class="hero"><h2>' + hero + "</h2><p>" + heroSub + "</p></div>" +
         '<div class="stats">' +
-          "<div><b>" + served + "/" + total + "</b><span>已刷</span></div>" +
+          "<div><b>" + served + "/" + total + "</b><span>" + (kp ? "已看" : "已刷") + "</span></div>" +
           "<div><b>" + known + "</b><span>已掌握</span></div>" +
           "<div><b>" + state.fav.length + "</b><span>收藏</span></div>" +
         "</div>" +
-        '<div class="section-title">' + (mc ? "按年份刷" : "按章节刷") + "</div>" + cards +
+        '<div class="section-title">' + (mc ? "按年份刷" : kp ? "按章节过" : "按章节刷") + "</div>" + cards +
         '<div class="chapter all"><a class="chapter-main" href="#/' + routeBase(mode) + 'all">' +
           '<span class="badge">全部</span>' +
           '<span class="meta"><span class="t">' + (mc ? "全部年份" : "全部章节") + "</span>" +
-          '<span class="s">打乱所有 ' + total + " 道题" + (weak ? " · 其中 " + weak + " 道还不熟" : "") + "</span></span>" +
+          '<span class="s">打乱所有 ' + total + " " + (kp ? "条知识点" : "道题") +
+            (weak ? " · 其中 " + weak + " " + (kp ? "条" : "道") + "还不熟" : "") + "</span></span>" +
           '<span class="go">' + served + "/" + total +
           '<span class="bar"><i style="width:' + allPct + '%"></i></span></span></a></div>' +
-        '<p class="hint">优先抽没刷过的题；全部刷完后优先复习「还不熟」的</p>' +
+        '<p class="hint">优先抽没' + (kp ? "看" : "刷") + '过的' + unit + '；全部过完后优先复习「还不熟」的</p>' +
         (hw ? '<p class="hint">题目和答案都是原书切图，点图可放大细看</p>' : "") +
         (mc ? '<p class="hint">选项点一下就算作答，答对自动记「已掌握」、答错记「还不熟」</p>' : "") +
+        (kp ? '<p class="hint">先自己回想，再点「看要点」对照；每条底下挂着考过它的真题，点一下就能跳过去</p>' : "") +
       "</div>";
+    syncHomeHref(mode);
     setTab("home");
   }
 
@@ -307,34 +367,37 @@
     var ch = chId === "all" ? null : chapterFor(mode, chId);
     var fav = isFav(q.id);
     var p = state.progress[q.id] || { seen: 0, known: null };
-    var hw = isHW(q), mc = isMC(q);
+    var hw = isHW(q), mc = isMC(q), kp = isKP(q);
     var head = ch ? (mc ? chLabelFor(mode, chId) + " · " + ch.title : chLabel(chId) + " · " + ch.title)
                   : chLabelFor(mode, chId);
 
-    /* 选择题的题面里已经带了可点的选项，不再需要「显示答案」那一步 */
+    /* 选择题的题面里已经带了可点的选项，不再需要「显示答案」那一步；
+       知识点反着来 —— 题面只有标题，要点必须手动点开，才好自测 */
     var body = hw ? '<div class="qimgs">' + qBodyHTML(q) + "</div>"
-                  : mc ? qBodyHTML(q)
-                       : '<div class="qtext">' + q.q + "</div>";
+                  : (mc || kp) ? qBodyHTML(q)
+                               : '<div class="qtext">' + q.q + "</div>";
+
+    var markRow = '<div class="markrow">' +
+        '<button class="mark' + (p.known === false ? " on-no" : "") + '" id="mno">还不熟</button>' +
+        '<button class="mark' + (p.known === true ? " on-ok" : "") + '" id="mok">已掌握</button>' +
+      "</div>";
 
     var action = mc
       ? '<div class="verdict" id="res" hidden></div>' +
         '<div id="after" hidden>' +
           expBlockHTML(q) +          /* 解析跟「答题后」的东西放在一起，选完选项才露出来 */
-          '<div class="markrow">' +
-            '<button class="mark' + (p.known === false ? " on-no" : "") + '" id="mno">还不熟</button>' +
-            '<button class="mark' + (p.known === true ? " on-ok" : "") + '" id="mok">已掌握</button>' +
-          "</div>" +
+          markRow +
           '<div class="btnrow"><button class="btn primary" id="next">下一题 →</button></div>' +
         "</div>" +
         '<p class="hint" id="prehint">点一下选项就是作答</p>'
-      : '<div class="btnrow"><button class="btn primary" id="reveal">显示答案</button></div>' +
+      : '<div class="btnrow"><button class="btn primary" id="reveal">' +
+          (kp ? "看要点" : "显示答案") + "</button></div>" +
         '<div id="after" hidden>' +
-          '<div class="markrow">' +
-            '<button class="mark' + (p.known === false ? " on-no" : "") + '" id="mno">还不熟</button>' +
-            '<button class="mark' + (p.known === true ? " on-ok" : "") + '" id="mok">已掌握</button>' +
-          "</div>" +
-          '<div class="btnrow"><button class="btn primary" id="next">下一题 →</button></div>' +
-        "</div>";
+          markRow +
+          '<div class="btnrow"><button class="btn primary" id="next">' +
+            (kp ? "下一条 →" : "下一题 →") + "</button></div>" +
+        "</div>" +
+        (kp ? '<p class="hint" id="prehint">先自己回想一遍，再点「看要点」</p>' : "");
 
     view.innerHTML =
       '<div class="topbar">' +
@@ -349,14 +412,16 @@
           '<span class="track"><i style="width:' + pct + '%"></i></span></div>' +
         '<div class="qcard">' +
           '<div class="qno">' +
-            '<span class="qno-line">' + (mc ? q.y + " 年真题" : chLabel(q.ch) + (hw ? " 课后题" : "")) +
-              " · 第 " + q.num + " 题" +
+            '<span class="qno-line">' +
+              (mc ? q.y + " 年真题" : chLabel(q.ch) + (hw ? " 课后题" : kp ? " 知识点" : "")) +
+              " · 第 " + q.num + (kp ? " 条" : " 题") +
               '<span id="know">' + (p.known === true ? " · 已掌握" : p.known === false ? " · 还不熟" : "") +
               "</span></span>" +
             (q.note ? '<span class="qnote">' + q.note + "</span>" : "") +
           "</div>" +
           body +
-          (mc ? "" : '<div class="answer" id="ans" hidden><div class="lead">参考答案</div>' +
+          (mc ? "" : '<div class="answer" id="ans" hidden><div class="lead">' +
+                       (kp ? "要点" : "参考答案") + "</div>" +
                      aBodyHTML(q) + "</div>") +
         "</div>" +
         action +
@@ -365,6 +430,7 @@
         "</p>" +
       "</div>";
 
+    syncHomeHref(mode);
     setTab("quiz");   /* 刷题时隐藏底部导航，专注做题 */
 
     document.getElementById("back").addEventListener("click", goBack);
@@ -463,6 +529,8 @@
 
     document.getElementById("reveal").parentNode.hidden = true;
     document.getElementById("after").hidden = false;
+    var pre = document.getElementById("prehint");
+    if (pre) pre.hidden = true;          /* 知识点的那句「先自己回想一遍」看过要点就撤掉 */
     bindZoom(ans);
 
     /* 更新进度条与左上角题号（首次刷过会影响统计） */
@@ -482,6 +550,9 @@
     save();
     document.getElementById("mno").classList.toggle("on-no", p.known === false);
     document.getElementById("mok").classList.toggle("on-ok", p.known === true);
+    /* 题目左上角那行也带「已掌握 / 还不熟」，跟着一起翻 */
+    var know = document.getElementById("know");
+    if (know) know.textContent = p.known === true ? " · 已掌握" : p.known === false ? " · 还不熟" : "";
   }
 
   function nextQ() {
@@ -507,14 +578,16 @@
     var items = state.fav.map(function (id) {
       var q = anyById(id);
       if (!q) return "";
-      var mc = isMC(q), hw = isHW(q);
+      var mc = isMC(q), hw = isHW(q), kp = isKP(q);
       var tag = (mc ? q.y + " 年" : chLabel(q.ch)) +
-                (hw ? " 课后题" : mc ? " 选择题" : "") + " · 第 " + q.num + " 题";
-      /* 选择题的题干里有公式和填空下划线，不能像简答题那样剥成纯文本，
+                (hw ? " 课后题" : mc ? " 选择题" : kp ? " 知识点" : "") +
+                " · 第 " + q.num + (kp ? " 条" : " 题");
+      /* 选择题和知识点的题干里有公式，不能像简答题那样剥成纯文本，
          否则 <sub>、分数和「____」都会丢 */
-      var txt = hw ? esc(q.t) : mc ? q.q : esc(plain(q.q));
+      var txt = hw ? esc(q.t) : mc ? q.q : kp ? esc(q.t) : esc(plain(q.q));
       /* 收藏页里选择题直接把选项连同答案一起列出来（顺手标出上次选了哪个），剩下的题还是折叠的 */
-      var body = mc ? optsHTML(q, (state.progress[id] || {}).pick, true) : "";
+      var body = mc ? optsHTML(q, (state.progress[id] || {}).pick, true)
+               : kp ? kpAnsHTML(q) : "";
       return '<div class="item" data-id="' + id + '">' +
         '<div class="tag">' + tag + "</div>" +
         '<div class="txt">' + txt + "</div>" +
@@ -522,7 +595,8 @@
         (mc ? expBlockHTML(q) : "") +
         (q.note ? '<div class="qnote">' + q.note + "</div>" : "") +
         '<div class="btnrow"><button class="btn" data-del="' + id + '">取消收藏</button>' +
-        (mc ? "" : '<button class="btn primary" data-toggle="' + id + '">显示答案</button>') +
+        (mc ? "" : '<button class="btn primary" data-toggle="' + id + '">' +
+                   (kp ? "看要点" : "显示答案") + "</button>") +
         "</div>" +
         "</div>";
     }).join("");
@@ -536,7 +610,9 @@
       btn.addEventListener("click", function () {
         var box = btn.closest(".item").querySelector(".fav-answer");
         box.hidden = !box.hidden;
-        btn.textContent = box.hidden ? "显示答案" : "收起答案";
+        var word = btn.closest(".item").querySelector(".tag").textContent.indexOf("知识点") >= 0
+          ? ["看要点", "收起要点"] : ["显示答案", "收起答案"];
+        btn.textContent = box.hidden ? word[0] : word[1];
         if (!box.hidden) bindZoom(box);
       });
     });
@@ -648,6 +724,12 @@
     document.getElementById("app").classList.toggle("no-tabs", !showTabs);
   }
 
+  /* 底部「章节」按回哪个板块 —— 在知识点栏里刷题时就该回知识点主页，别一脚踹回简答题 */
+  function syncHomeHref(mode) {
+    var a = tabbar.querySelector('[data-tab="home"]');
+    if (a) a.setAttribute("href", modeHome(mode));
+  }
+
   function route() {
     var h = location.hash.replace(/^#\/?/, "");
     var parts = h.split("/").filter(Boolean);
@@ -670,6 +752,14 @@
       if (cur.ch !== y && !parts[2]) cur.q = null;
       if (parts[2]) cur.ch = y;
       return renderQuiz(y, parts[2] || null, "mc");
+    }
+    if (parts[0] === "kp") {
+      if (!parts[1]) return renderHome("kp");
+      var kpCh = parts[1] === "all" ? "all" : parseInt(parts[1], 10);
+      if (kpCh !== "all" && !chapterOf(kpCh)) return renderHome("kp");
+      if (cur.ch !== kpCh && !parts[2]) cur.q = null;
+      if (parts[2]) cur.ch = kpCh;
+      return renderQuiz(kpCh, parts[2] || null, "kp");
     }
     if (parts[0] === "quiz") {
       var chId = parts[1] === "all" || parts[1] === undefined ? "all" : parseInt(parts[1], 10);
