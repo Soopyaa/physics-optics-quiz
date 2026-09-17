@@ -1,0 +1,114 @@
+{
+  "year": 2014,
+  "kind": "exam",
+  "source_pages_q": [
+    36
+  ],
+  "source_pages_a": [
+    25,
+    26
+  ],
+  "note": "原卷第二大题为简答题，每小题 5 分，共 30 分，6 题全部在题目卷第 36 页（卷面页码 35）。答案册的简答题部分起于答案册第 25 页的「二、简答题」，止于第 26 页的「三、计算题」之前。答案册每道题前的「余哥团队学长解析:」已按要求删除；页眉页脚、行内水印「【微信公众号：余哥成电考研】」和斜向水印均已剔除，被水印劈开的词已接回。第 3 题的答案跨答案册第 25、26 两页。",
+  "items": [
+    {
+      "num": 1,
+      "q": "给出时谐的平面波、球面波和柱面波的波函数，并比较三波函数的异同点。",
+      "a": [
+        {
+          "t": "p",
+          "v": "平面波 <span class=\"m\">E</span> = <span class=\"m\">E</span><sub>0</sub>exp[−<span class=\"m\">i</span>(<span class=\"m\">wt</span> − <span class=\"m\">kr</span> + <span class=\"m\">φ</span><sub>0</sub>)]，球面波 <span class=\"m\">E</span> = <span class=\"frac\"><span class=\"n\"><span class=\"m\">E</span><sub>0</sub></span><span class=\"d\"><span class=\"m\">r</span></span></span>exp[−<span class=\"m\">i</span>(<span class=\"m\">wt</span> − <span class=\"m\">kr</span>)]，柱面波 <span class=\"m\">E</span> = <span class=\"frac\"><span class=\"n\"><span class=\"m\">E</span><sub>0</sub></span><span class=\"d\">√<span class=\"rad\"><span class=\"m\">r</span></span></span></span>exp[−<span class=\"m\">i</span>(<span class=\"m\">wt</span> − <span class=\"m\">kr</span>)]。平面波、球面波、柱面波的等相面和等振幅面重合，都是光波的基本形式。而平面波振幅不随 <span class=\"m\">r</span> 变化，球面波振幅随 <span class=\"m\">r</span> 成反比变化，球面波振幅与 √<span class=\"rad\"><span class=\"m\">r</span></span> 成反比变化。"
+        }
+      ],
+      "figs": [],
+      "note": "答案册把三个波函数分三行排版，此处合并为一段，公式内容未改。末句「球面波振幅与 √r 成反比变化」按内容应为「柱面波」，原书如此排印，照录未改。"
+    },
+    {
+      "num": 2,
+      "q": "为什么平板的等倾干涉中采用扩展光源可获得有足够亮度的条纹，并且不会降低干涉条纹的可见度？",
+      "a": [
+        {
+          "t": "p",
+          "v": "在分波前干涉中，需要满足光的空间相干性，使干涉孔径角 <span class=\"m\">β</span> 要满足 <span class=\"m\">bβ</span> &lt; <span class=\"m\">λ</span>，即只能使用有限大小的光源，使得条纹可见度与条纹亮度间存在矛盾。而平板的等倾干涉属于分振幅干涉，同一级干涉条纹由具有相同倾角的光形成，而与光源发光点位置无关，光源每一点都产生一组等倾干涉条纹，它们彼此准确重合，所以扩展光源不会影响条纹可见度，只会增加干涉条纹强度。"
+        }
+      ],
+      "figs": [],
+      "note": ""
+    },
+    {
+      "num": 3,
+      "q": "在如图所示的单缝夫琅禾费衍射装置中，做如下变动，衍射图样会如何变化。<br>(1) 增大透镜的焦距，同时将观察屏移动到对应的焦平面上。<br>(2) 增大透镜的口径。<br>(3) 单缝屏向透镜平移。<br>(4) 单缝屏向上移动，但不超出光束的照射范围。",
+      "a": [
+        {
+          "t": "p",
+          "v": "（1）由 <span class=\"m\">Δx</span> = <span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\"><span class=\"m\">a</span></span></span><span class=\"m\">f</span> 知，增大焦距，会使焦平面上衍射条纹间距增大。"
+        },
+        {
+          "t": "p",
+          "v": "（2）增大透镜口径，使得更多的光进入透镜，在观察屏上产生衍射条纹，对应观察屏上衍射条纹级次增多。"
+        },
+        {
+          "t": "p",
+          "v": "（3）单缝向透镜平移，使得孔径角增大，更多光进入透镜，使得观察屏上衍射条纹数目增多。"
+        },
+        {
+          "t": "p",
+          "v": "（4）衍射图样无变化，因为光总是经透镜聚焦在透镜焦平面，焦点位置也即中央主极大位置，所以衍射图样不随单缝屏的移动而发生变化。"
+        }
+      ],
+      "figs": [
+        "2014-3.png"
+      ],
+      "note": ""
+    },
+    {
+      "num": 4,
+      "q": "为什么在各向异性晶体中光波的相速度与能量传播速度不同？两者在方向和大小上有何关系？",
+      "a": [
+        {
+          "t": "p",
+          "v": "因为各向异性晶体的主折射率不同，所以 <span class=\"m\">D⃗</span> 矢量与 <span class=\"m\">E⃗</span> 矢量一般不同向，从而 <span class=\"m\">k⃗</span> 与 <span class=\"m\">s⃗</span> 也不同向，<span class=\"m\">D⃗</span> 与 <span class=\"m\">E⃗</span> 之间的夹角即为 <span class=\"m\">k⃗</span> 与 <span class=\"m\">s⃗</span> 间的夹角。"
+        },
+        {
+          "t": "p",
+          "v": "相速度 <span class=\"m\">v</span><sub>p</sub> 与能量传播速度 <span class=\"m\">v</span><sub>r</sub> 满足 <span class=\"m\">v</span><sub>p</sub> = <span class=\"m\">v</span><sub>r</sub> cos <span class=\"m\">α</span>，相速度是能量传播速度在波阵面法线方向上的投影。"
+        }
+      ],
+      "figs": [],
+      "note": "原文中相速度、能量传播速度的下标受扫描字体影响不易分辨大小写，此处按常见写法录为 v<sub>p</sub>、v<sub>r</sub>。"
+    },
+    {
+      "num": 5,
+      "q": "以图中轴上球面波为例说明光波场的傍轴条件和远场条件？其意义何在？",
+      "a": [
+        {
+          "t": "p",
+          "v": "傍轴近似 <span class=\"m\">z</span><sub>1</sub><sup>2</sup> &gt;&gt; (<span class=\"m\">x</span><sup>2</sup> + <span class=\"m\">y</span><sup>2</sup>)<sub>max</sub>，即观察屏 Σ 的开孔和观察屏上考察的范围都远小于开孔到观察屏的距离。"
+        },
+        {
+          "t": "p",
+          "v": "在傍轴近似下有① cos(<span class=\"m\">n⃗</span>, <span class=\"m\">r⃗</span>) = cos <span class=\"m\">θ</span> ≈ 1，则 <span class=\"m\">K</span>(<span class=\"m\">θ</span>) = <span class=\"frac\"><span class=\"n\">1 + cos <span class=\"m\">θ</span></span><span class=\"d\">2</span></span> ≈ 1；② <span class=\"m\">r</span> ≈ <span class=\"m\">z</span><sub>1</sub>。由上两式可简化基尔霍夫衍射公式。"
+        },
+        {
+          "t": "p",
+          "v": "远场近似，当观察屏离孔的距离很远时：<span class=\"m\">k</span><span class=\"frac\"><span class=\"n\"><span class=\"m\">x</span><sub>1</sub><sup>2</sup> + <span class=\"m\">y</span><sub>1</sub><sup>2</sup></span><span class=\"d\">2<span class=\"m\">z</span></span></span> &lt;&lt; <span class=\"m\">π</span>，可将 <span class=\"m\">r</span> 化简为 <span class=\"m\">r</span> = <span class=\"m\">z</span><sub>1</sub> + <span class=\"frac\"><span class=\"n\"><span class=\"m\">x</span><sup>2</sup> + <span class=\"m\">y</span><sup>2</sup></span><span class=\"d\">2<span class=\"m\">z</span><sub>1</sub></span></span> − <span class=\"frac\"><span class=\"n\"><span class=\"m\">xx</span><sub>1</sub> + <span class=\"m\">yy</span><sub>1</sub></span><span class=\"d\"><span class=\"m\">z</span><sub>1</sub></span></span>。"
+        }
+      ],
+      "figs": [
+        "2014-5.png"
+      ],
+      "note": "答案册只给出傍轴条件、远场条件的表述以及由它们对基尔霍夫衍射公式的简化，没有单独回答「其意义何在」，此处照录，未作补充。"
+    },
+    {
+      "num": 6,
+      "q": "解释稀薄气体的吸收带很窄、而固体和液体的吸收带比较宽的原因。",
+      "a": [
+        {
+          "t": "p",
+          "v": "稀薄气体的吸收属于选择吸收，介质对光有强烈的吸收，并随波长变化有显著变化，所以吸收带较窄，而固体、液体属于稠密介质，介质对某一波段的吸收少且吸收系数随波长变化不大，所以吸收带较宽。"
+        }
+      ],
+      "figs": [],
+      "src_note": "答案原书「吸收写书」为「吸收系数」之误，已订正。"
+    }
+  ]
+}

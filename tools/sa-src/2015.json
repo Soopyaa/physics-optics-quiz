@@ -1,0 +1,104 @@
+{
+  "year": 2015,
+  "kind": "exam",
+  "source_pages_q": [
+    41
+  ],
+  "source_pages_a": [
+    30,
+    31
+  ],
+  "note": "原卷第二大题为简答题，每小题 6 分，共 30 分，5 题全部在题目卷第 41 页（卷面页码 40）。答案册的简答题部分起于答案册第 30 页的「二、简答题」，止于第 31 页的「三、计算题」之前。答案册每道题前的「余哥团队学长解析:」已按要求删除；页眉页脚、行内水印「【微信公众号：余哥成电考研】」和斜向水印均已剔除，被水印劈开的词已接回。第 3 题的答案跨答案册第 30、31 两页。",
+  "items": [
+    {
+      "num": 1,
+      "q": "解释“半波损失”和“附加光程差”。",
+      "a": [
+        {
+          "t": "p",
+          "v": "光从光疏介质射向光密介质时，在入射点，反射光相对于入射光有相位突变 <span class=\"m\">π</span>，由于相位 <span class=\"m\">π</span> 与 <span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\">2</span></span> 相对应，相当于反射光有一个附加光程 <span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\">2</span></span>，这种相位突变现象即为半波损失，产生的附加光程差 <span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\">2</span></span> 节日附加光程差。"
+        }
+      ],
+      "figs": [],
+      "note": "原书此处作「产生的附加光程差 λ/2 节日附加光程差」，「节日」二字疑为原书排印错误，原书如此，照录未改、未作猜测。"
+    },
+    {
+      "num": 2,
+      "q": "比较牛顿环与迈克耳逊干涉仪等倾干涉圆环的主要异同点。",
+      "a": [
+        {
+          "t": "p",
+          "v": "不同点：牛顿环是等厚干涉，其条纹与厚度有关，中央环中央级次最低，且中央为暗纹。迈克耳逊干涉是等倾干涉，条纹由光束的入射角度决定，同一级条纹由相同倾角的光形成，其中央对应最大光程差，级次最高，往两边逐渐降低。"
+        },
+        {
+          "t": "p",
+          "v": "相同点：两者都是分振幅干涉，产生的干涉条纹都是中间疏两边密。"
+        }
+      ],
+      "figs": [],
+      "note": ""
+    },
+    {
+      "num": 3,
+      "q": "比较法布里-珀罗标准具和光栅的三个分光特性参数。",
+      "a": [
+        {
+          "t": "p",
+          "v": "①自由光谱范围：<span class=\"m\">F</span> − <span class=\"m\">P</span> 标准具 (<span class=\"m\">Δλ</span>)<sub>f</sub> = <span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\"><span class=\"m\">m</span></span></span> = <span class=\"frac\"><span class=\"n\">λ<sup>2</sup></span><span class=\"d\">2<span class=\"m\">nh</span></span></span>，光栅 <span class=\"m\">Δλ</span> = <span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\"><span class=\"m\">m</span></span></span>"
+        },
+        {
+          "t": "p",
+          "v": "<span class=\"m\">F</span> − <span class=\"m\">P</span> 标准具干涉级次很高，而光栅使用的光谱级次 <span class=\"m\">m</span> 小，所以光栅的自由光谱范围要比 <span class=\"m\">F</span> − <span class=\"m\">P</span> 标准具的大得多。"
+        },
+        {
+          "t": "p",
+          "v": "②分辨本领：<span class=\"m\">F</span> − <span class=\"m\">P</span> 标准具 <span class=\"m\">A</span> = <span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\">(<span class=\"m\">Δλ</span>)<sub>m</sub></span></span> = 0.97<span class=\"m\">mN</span>，光栅 <span class=\"m\">A</span> = <span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\"><span class=\"m\">δλ</span></span></span> = <span class=\"m\">mN</span>"
+        },
+        {
+          "t": "p",
+          "v": "两者的分辨本领都很高，但光栅的高分辨来自于刻线数 <span class=\"m\">N</span> 很大，而 <span class=\"m\">F</span> − <span class=\"m\">P</span> 标准具来源于高干涉级次。"
+        },
+        {
+          "t": "p",
+          "v": "③色散：<span class=\"m\">F</span> − <span class=\"m\">P</span> 标准具 <span class=\"m\">D</span><sub>θ</sub> = <span class=\"frac\"><span class=\"n\"><span class=\"m\">dθ</span></span><span class=\"d\"><span class=\"m\">dλ</span></span></span> = |<span class=\"frac\"><span class=\"n\"><span class=\"m\">m</span></span><span class=\"d\">2<span class=\"m\">nh</span>sin<span class=\"m\">θ</span></span></span>|，光栅 <span class=\"frac\"><span class=\"n\"><span class=\"m\">dθ</span></span><span class=\"d\"><span class=\"m\">dλ</span></span></span> = <span class=\"frac\"><span class=\"n\"><span class=\"m\">m</span></span><span class=\"d\"><span class=\"m\">d</span>cos<span class=\"m\">θ</span></span></span>"
+        },
+        {
+          "t": "p",
+          "v": "<span class=\"m\">F</span> − <span class=\"m\">P</span> 标准具中心处角色散最大，所以其中心处光谱最纯。光栅角色散与光栅常数 <span class=\"m\">d</span> 成反比，与级次 <span class=\"m\">m</span> 成正比，由于 <span class=\"m\">d</span> 通常很小，所以光栅具有很大的色散本领。"
+        }
+      ],
+      "figs": [],
+      "note": "答案册第 30 页末尾写到「光栅角色散与光栅常数」，第 31 页开头接「d 成反比……」，此处已接续。"
+    },
+    {
+      "num": 4,
+      "q": "在如图所示的平行光干涉装置中，分别说明偏振片 P<sub>1</sub>、晶片 C、偏振片 P<sub>2</sub> 的作用。为什么一定要用 P<sub>2</sub>？",
+      "a": [
+        {
+          "t": "p",
+          "v": "<span class=\"m\">P</span><sub>1</sub> 为起偏器，自然光通过 <span class=\"m\">P</span><sub>1</sub> 成为线偏振光。"
+        },
+        {
+          "t": "p",
+          "v": "<span class=\"m\">C</span> 把 <span class=\"m\">P</span><sub>1</sub> 产生的线偏光分为振动方向相互垂直的两束线偏光（o 光和 e 光），且产生一定相位差，<span class=\"m\">P</span><sub>2</sub> 将具有一定相位差的两束振动方向垂直的线偏振光引到同一振动方向，使其产生干涉。"
+        }
+      ],
+      "figs": [
+        "2015-4.png"
+      ],
+      "note": ""
+    },
+    {
+      "num": 5,
+      "q": "解释为什么交通信号灯通常会采用绿光和红光？",
+      "a": [
+        {
+          "t": "p",
+          "v": "空气中多为粉尘等悬浮颗粒，尺寸小，对光的散射属于瑞利散射，<span class=\"m\">I</span>(<span class=\"m\">λ</span>) ∝ <span class=\"frac\"><span class=\"n\">1</span><span class=\"d\">λ<sup>4</sup></span></span>，散射光强度与波长的四次方成反比，而红光、绿光的波长较长，所以被散射的光强少，所以其穿透能力强，易于观察。"
+        }
+      ],
+      "figs": [],
+      "note": ""
+    }
+  ]
+}

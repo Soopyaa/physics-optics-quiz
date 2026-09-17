@@ -96,14 +96,16 @@ body {
 
 /* ============ 板块切换（简答题 / 课后题） ============ */
 .modesw {
-  display: flex; gap: 5px; margin: 16px 4px 0; padding: 5px;
+  display: flex; gap: 3px; margin: 16px 4px 0; padding: 5px;
   background: var(--card); border: 1px solid var(--border);
   border-radius: 14px; box-shadow: var(--shadow);
 }
+/* 五个板块了，「简答真题」是四字，字号收一号才排得下 */
 .modesw a {
   flex: 1; padding: 10px 0; border-radius: 10px; text-align: center;
   text-decoration: none; color: var(--muted);
-  font-size: 14px; font-weight: 600; letter-spacing: .3px;
+  font-size: 13px; font-weight: 600; letter-spacing: 0;
+  white-space: nowrap;
 }
 .modesw a:active { background: var(--card-2); }
 .modesw a.on { background: var(--accent); color: #fff; }

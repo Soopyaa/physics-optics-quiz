@@ -1,9 +1,10 @@
 /* 李承霖大王的光学复习 · 离线缓存
  * 策略：页面/脚本/样式走「网络优先」保证更新；图片走「缓存优先」保证离线可看。
  */
-const CACHE = "po-quiz-v7";
-/* 课后题的 275 张切图、真题选择题的 25 张插图不预缓存 —— 图片走下面的「缓存优先 + 按需写入」，
-   一次性 addAll 会把首次安装拖成几十秒，还容易整批失败。 */
+const CACHE = "po-quiz-v8";
+/* 课后题的 275 张切图、真题选择题的 25 张插图、真题简答题的几张卷面插图不预缓存 ——
+   图片走下面的「缓存优先 + 按需写入」，一次性 addAll 会把首次安装拖成几十秒，
+   还容易整批失败。 */
 const SHELL = [
   "./",
   "./index.html",
@@ -14,6 +15,7 @@ const SHELL = [
   "./hw-data.js",
   "./mc-data.js",
   "./mc-exp.js",
+  "./sa-data.js",
   "./manifest.webmanifest",
   "./assets/icon-192.png",
   "./assets/icon-512.png",
