@@ -397,6 +397,17 @@ body {
 .verdict.no { background: var(--no-soft); color: var(--no); }
 .verdict.unknown { background: var(--card-2); color: var(--muted); font-weight: 500; font-size: 14.5px; }
 
+/* 选择题解析 —— 跟「答题后」那一块一起出现；文字在 mc-exp.js，插入逻辑见 app.js 的 expBlockHTML */
+.exp { margin-top: 14px; padding: 13px 15px; border-radius: 12px;
+  background: var(--card-2); border-left: 3px solid var(--accent);
+  font-size: 15px; line-height: 1.8; overflow-wrap: break-word; }
+.exp .lead { font-size: 12px; color: var(--accent); font-weight: 600;
+  letter-spacing: .5px; margin-bottom: 7px; }
+/* 解析里的变量用和正文公式一样的衬线斜体，关键结论加重 */
+.exp i { font-family: "Times New Roman", "Songti SC", serif; font-style: italic; }
+.exp b { color: var(--accent); font-weight: 600; }
+.item .exp { margin: 0 0 12px; font-size: 14.5px; }
+
 /* 卷面自带的标注（「（题目存疑）」「答案册记作 A/D 两说」这类） */
 /* 年份卡片下面的卷面说明 */
 .cnote { margin: 0 14px 12px; font-size: 12px; line-height: 1.55; color: var(--muted); }

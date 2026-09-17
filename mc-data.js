@@ -608,7 +608,7 @@ var MC = [
   { id: "m2013-9", y: 2013, num: 9,
     q: "在迈克耳孙干涉仪的一支光路中，放入一片折射率为 <span class=\"m\">n</span> 的透明介质薄膜后，测出两束光的光程差的改变量为一个波长 <span class=\"m\">λ</span>，则薄膜的厚度是 <span class=\"blank\"></span> 。",
     o: ["<span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\">2</span></span>", "<span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\">2n</span></span>", "<span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\">n</span></span>", "<span class=\"frac\"><span class=\"n\">λ</span><span class=\"d\">2(n−1)</span></span>"],
-    a: 1,
+    a: 3,
   },
   { id: "m2013-10", y: 2013, num: 10,
     q: "当 F-P 腔的反射率 <span class=\"m\">R</span> 增加时，其色分辨能力 <span class=\"blank\"></span> 。",

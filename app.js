@@ -174,6 +174,17 @@
     }).join("") + "</div>";
   }
 
+  /* 选择题解析存在 mc-exp.js 的 MC_EXP 里，键是题号；缺了就当作没有 */
+  function expOf(item) {
+    if (!item || typeof MC_EXP === "undefined") return "";
+    return MC_EXP[item.id] || "";
+  }
+  function expBlockHTML(item) {
+    var t = expOf(item);
+    if (!t) return "";
+    return '<div class="exp"><div class="lead">解析</div>' + t + "</div>";
+  }
+
   /* 简答题 / 选择题 / 课后题 切换 */
   function modeSwitch(mode) {
     return '<div class="modesw">' +
@@ -308,6 +319,7 @@
     var action = mc
       ? '<div class="verdict" id="res" hidden></div>' +
         '<div id="after" hidden>' +
+          expBlockHTML(q) +          /* 解析跟「答题后」的东西放在一起，选完选项才露出来 */
           '<div class="markrow">' +
             '<button class="mark' + (p.known === false ? " on-no" : "") + '" id="mno">还不熟</button>' +
             '<button class="mark' + (p.known === true ? " on-ok" : "") + '" id="mok">已掌握</button>' +
@@ -507,6 +519,7 @@
         '<div class="tag">' + tag + "</div>" +
         '<div class="txt">' + txt + "</div>" +
         (mc ? body : '<div class="fav-answer" hidden>' + body + "</div>") +
+        (mc ? expBlockHTML(q) : "") +
         (q.note ? '<div class="qnote">' + q.note + "</div>" : "") +
         '<div class="btnrow"><button class="btn" data-del="' + id + '">取消收藏</button>' +
         (mc ? "" : '<button class="btn primary" data-toggle="' + id + '">显示答案</button>') +
